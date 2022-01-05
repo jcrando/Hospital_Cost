@@ -1,1 +1,1 @@
-# hosptial-cost-
+# hospital-cost
