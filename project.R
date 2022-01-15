@@ -4,6 +4,7 @@ library(plotly)
 library(leaflet)
 
 hospitals=read_rds('map_and_hospitals.rds')
+hospitals= relocate(hospitals, Latitude,.after = Longitude) 
 
 
 area_list= hospitals %>% 
@@ -47,8 +48,8 @@ server= function(input, output, session) {
       addProviderTiles(providers$Stamen.TonerLite,
                        options = providerTileOptions(noWrap = TRUE)
       ) %>%
-      addMarkers(data = hospitals %>% 
-                   select(Longitude, Latitude))
+      addMarkers(data = hospitals, 
+                   label = (hospitals$`Hospital Name`))
   })
 }
 shiny:: shinyApp(ui, server)
