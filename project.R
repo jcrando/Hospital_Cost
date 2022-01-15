@@ -26,12 +26,30 @@ sidebar= dashboardSidebar(
 )
 
 
-body= dashboardBody()
+body= dashboardBody(fluidPage(
+  leafletOutput('mymap'),
+  p(),
+  actionButton('recal', 'New points')
+))
 
 ui= dashboardPage(header, sidebar, body)
 
-server= function(input, output) {
+  
+
+server= function(input, output, session) {
   output$value <- reactive({ input$select })
+  points <- eventReactive(input$recalc, {
+    cbind(rnorm(40) * 2 + 13, rnorm(40) + 48)
+  }, ignoreNULL = FALSE)
+  
+  output$mymap <- renderLeaflet({
+    leaflet() %>%
+      addProviderTiles(providers$Stamen.TonerLite,
+                       options = providerTileOptions(noWrap = TRUE)
+      ) %>%
+      addMarkers(data = hospitals %>% 
+                   select(Longitude, Latitude))
+  })
 }
 shiny:: shinyApp(ui, server)
 
