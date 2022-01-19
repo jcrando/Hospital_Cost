@@ -29,7 +29,7 @@ sidebar= dashboardSidebar(
     inputId = 'area',
     label= 'County, City, Zip, or Hospital',
     choices= area_list,
-    selected= 'DAVIDSON'),
+    selected= area_list),
   
     
  ## uiOutput('secondary_drop_down'),
@@ -38,7 +38,7 @@ selectInput(
     inputId = 'procedure',
     label= 'Procedure',
     choices= procedure,
-    selected= 'URINALYSIS, MANUAL TEST')
+    selected= procedure)
   )
 
 
