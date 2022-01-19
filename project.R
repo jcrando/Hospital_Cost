@@ -3,15 +3,15 @@ library(tidyverse)
 library(plotly)
 library(leaflet)
 
-hospitals=read_rds('map_and_hospitals.rds')
-hospitals= relocate(hospitals, Latitude,.after = Longitude) 
+hospitals=read_rds('maps_and_hospitals.rds')
+hospitals= relocate(hospitals, Latitude,.after = Longitude)
 hospitals= hospitals %>% 
-  mutate(contentbox= paste(hospitals$`Hospital Name`, '</br>',  hospitals$Address, '</br>', hospitals$`(sum(TOTAL_SERVICES * AVG_MEDICARE_PAYMENT)/(sum(TOTAL_SERVICES)))`))
+  mutate(contentbox= paste(hospitals$`Hospital Name`, '</br>',  hospitals$Address, '</br>', hospitals$`mean(AVG_MEDICARE_STANDARIZED_AMOUNT)`))
 
 
 hospitalIcon= makeIcon(iconUrl = 'clipart-hospital-hospital-building-6.png', 
                        iconWidth = 35, iconHeight = 35)#,
-                       #iconAnchorX = 22, iconAnchorY = 94)
+                       
 
 
 
