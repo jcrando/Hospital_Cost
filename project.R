@@ -1,6 +1,7 @@
 library('shinydashboard')
 library(tidyverse)
 library(leaflet)
+library(plotly)
 
 hospitals=read_rds('maps_and_hospitals.rds')
 hospitals= relocate(hospitals, Latitude,.after = Longitude)
@@ -18,31 +19,30 @@ hospitalIcon= makeIcon(iconUrl = 'clipart-hospital-hospital-building-6.png',
                        iconWidth = 35, iconHeight = 35) # if needed, reinsert ____ here
 
 hospitals= 
-  rename(hospitals, replace= c('mean_col'='Cost'))
+  rename(hospitals, Cost=mean_col)
 
 
 
 
 
-
-area_list= hospitals %>% 
-  select(County,City,`Zip Code`,`Hospital Name`)
 
 procedure= hospitals %>% 
   select(HCPCS_DESCRIPTION)
+
+group= c('County', 'City', 'Zip Code', 'Hospital Name')
 
 
 header= dashboardHeader()
 
 sidebar= dashboardSidebar(
   selectInput(
-    inputId = 'area',
+    inputId = 'Group',
     label= 'County, City, Zip, or Hospital',
-    choices= area_list,
-    selected= area_list),
+    choices= group,
+    selected= 'City'),
   
   
-  ## uiOutput('secondary_drop_down'),
+  uiOutput('selector'),
   
   selectInput(
     inputId = 'procedure',
@@ -88,6 +88,22 @@ server= function(input, output, session) {
   ### points <- eventReactive(input$recalc, { ###
   ###   cbind(rnorm(40) * 2 + 13, rnorm(40) + 48) ###
   ###  }, ignoreNULL = FALSE)###
+  
+  output$selector= renderUI({
+    
+    default= c('County'= 'DAVIDSON', 'City'= 'NASHVILLE', 'Zip Code'= '37211', 'Hospital Name'='VANDERBILT UNIVERSITY MEDICAL CENTER')
+    
+    area_list=hospitals %>% 
+      pull(input$Group) %>% 
+      sort()
+    
+    
+    selectInput(
+      inputId = 'area',
+      label= 'County, City, Zip, or Hospital',
+      choices= area_list,
+      selected= 1)
+  })
   
   output$mymap <- renderLeaflet({
     leaflet() %>%
