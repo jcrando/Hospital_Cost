@@ -112,13 +112,17 @@ server= function(input, output, session) {
                `Zip Code`== input$area |
                `Hospital Name`== input$area) %>% 
       filter(HCPCS_DESCRIPTION== input$procedure) %>% 
-      ggplot(aes(x=reorder(`Hospital Name`, -Cost), y=Cost, fill=`Street Address`))+
+      mutate(`Hospital Name`= factor(`Hospital Name`) %>% 
+               fct_reorder(Cost, .desc = TRUE)) %>% 
+      ggplot(aes(x=`Hospital Name`, y=Cost, fill=`Street Address`))+
       geom_bar(stat='summary',fun= 'mean')+
       coord_flip()+
       ggtitle('Cost at Hospital')+
       labs(x= '', y='')+
       theme (legend.position = "none")+
-      scale_y_continuous(labels=scales::dollar_format())
+      scale_y_continuous(labels=scales::dollar_format())+
+      scale_color_grey()
+    
     
   })}
 
