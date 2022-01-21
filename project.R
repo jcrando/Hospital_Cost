@@ -1,6 +1,5 @@
 library('shinydashboard')
 library(tidyverse)
-library(plotly)
 library(leaflet)
 
 hospitals=read_rds('maps_and_hospitals.rds')
@@ -18,6 +17,8 @@ hospitals= hospitals %>%
 hospitalIcon= makeIcon(iconUrl = 'clipart-hospital-hospital-building-6.png', 
                        iconWidth = 35, iconHeight = 35) # if needed, reinsert ____ here
 
+hospitals= 
+  rename(hospitals, replace= c('mean_col'='Cost'))
 
 
 
@@ -104,20 +105,21 @@ server= function(input, output, session) {
   
   
   output$myplot= renderPlotly({
-    p= hospitals %>% 
+    
+    hospitals %>% 
       filter(County== input$area  | 
                City==input$area |
                `Zip Code`== input$area |
                `Hospital Name`== input$area) %>% 
       filter(HCPCS_DESCRIPTION== input$procedure) %>% 
-      ggplot(aes(x=reorder(`Hospital Name`, -mean_col), mean_col, fill=`Street Address`))+
-      geom_col()+
+      ggplot(aes(x=reorder(`Hospital Name`, -Cost), y=Cost, fill=`Street Address`))+
+      geom_bar(stat='summary',fun= 'mean')+
       coord_flip()+
       ggtitle('Cost at Hospital')+
       labs(x= '', y='')+
       theme (legend.position = "none")+
       scale_y_continuous(labels=scales::dollar_format())
-    ggplotly(p)
+    
   })}
 
 shiny:: shinyApp(ui, server)
