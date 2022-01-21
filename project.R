@@ -21,6 +21,9 @@ hospitalIcon= makeIcon(iconUrl = 'clipart-hospital-hospital-building-6.png',
 
 
 
+
+
+
 area_list= hospitals %>% 
   select(County,City,`Zip Code`,`Hospital Name`)
 
@@ -53,6 +56,11 @@ body= dashboardBody(fluidPage(
   leafletOutput('mymap'),
   ####  p(),
   #### actionButton('recal', 'New points')
+  
+  plotlyOutput('myplot'),
+  
+  
+  
 ))
 
 ui= dashboardPage(header, sidebar, body)
@@ -93,6 +101,24 @@ server= function(input, output, session) {
                  popup =  ~contentbox,
                  icon = hospitalIcon)
   })
-}
+  
+  
+  output$myplot= renderPlotly({
+    p= hospitals %>% 
+      filter(County== input$area  | 
+               City==input$area |
+               `Zip Code`== input$area |
+               `Hospital Name`== input$area) %>% 
+      filter(HCPCS_DESCRIPTION== input$procedure) %>% 
+      ggplot(aes(x=reorder(`Hospital Name`, -mean_col), mean_col, fill=`Street Address`))+
+      geom_col()+
+      coord_flip()+
+      ggtitle('Cost at Hospital')+
+      labs(x= '', y='')+
+      theme (legend.position = "none")+
+      scale_y_continuous(labels=scales::dollar_format())
+    ggplotly(p)
+  })}
+
 shiny:: shinyApp(ui, server)
 
