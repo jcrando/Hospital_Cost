@@ -3,6 +3,8 @@ library(tidyverse)
 library(leaflet)
 library(plotly)
 
+rsconnect::setAccountInfo(name='jakerandolph', token='A12C73121E705DF99658107234FFE21C', secret='pbMWJhkn79YodqXRWoTh/71tX/U1V6oiFJrWVd4B')
+
 hospitals=read_rds('maps_and_hospitals.rds')
 hospitals= relocate(hospitals, Latitude,.after = Longitude)
 
